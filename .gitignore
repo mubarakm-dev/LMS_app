@@ -1,0 +1,17 @@
+.env
+
+output/*           
+!output/.gitkeep
+features.md
+
+.env
+lms_env/
+
+__pycache__/
+*.pyc
+.pytest_cache/
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
