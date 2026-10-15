@@ -1,5 +1,5 @@
 class LMSError(Exception):
-    """Base class for all application errors shown to the user."""
+    pass
 
 
 class ValidationError(LMSError):
@@ -23,4 +23,4 @@ class DuplicateError(LMSError):
 
 
 class ServiceUnavailable(LMSError):
-    """Database, SMTP, microphone, TTS or translation backend failed."""
+    pass
