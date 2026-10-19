@@ -37,7 +37,7 @@ class UserRepository:
             cursor.close()
             conn.close()
 
-    def email_exist(self, email):
+    def email_exists(self, email):
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 

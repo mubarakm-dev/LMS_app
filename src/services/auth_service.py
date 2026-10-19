@@ -36,8 +36,7 @@ class AuthService:
     def login(self, email, password):
         user = self.user_repo.get_by_email(email.strip().lower())
 
-        if user is None or not:
-            bcrypt.checkpw(password.encode(), user["password_hash"].encode())
+        if user is None or not bcrypt.checkpw(password.encode(), user["password_hash"].encode()):
             raise AuthError("Invalid email or password.")
 
         if not user["is_active"]:
