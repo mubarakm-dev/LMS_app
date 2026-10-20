@@ -10,6 +10,10 @@ class AuthError(LMSError):
     pass
 
 
+class UnverifiedError(AuthError):
+    pass
+
+
 class PermissionDenied(LMSError):
     pass
 

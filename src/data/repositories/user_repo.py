@@ -49,6 +49,17 @@ class UserRepository:
             cursor.close()
             conn.close()
 
+    def mark_verified(self, user_id):
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            sql = "UPDATE users SET is_verified = TRUE WHERE id = %s"
+            cursor.execute(sql, (user_id,))
+            conn.commit()
+        except Error:
+            conn.rollback()
+            raise
+        finally:
+            cursor.close()
+            conn.close()
 
-
-    
