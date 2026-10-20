@@ -81,7 +81,7 @@ class App:
             self.user = self.auth.login(email, password)
             print(f"Login successful. Welcome {self.user.first_name}.")
         except UnverifiedError as e:
-            print(f"Error: {e}")
+            print(f"Email not verified: {e}")
             if input("Send a verification code now? (y/n): ").lower() == "y":
                 self.verify_email(email)
             return

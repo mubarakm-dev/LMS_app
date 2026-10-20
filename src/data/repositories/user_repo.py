@@ -63,3 +63,46 @@ class UserRepository:
             cursor.close()
             conn.close()
 
+
+    def list_all(self):
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        try:
+            sql = (
+                "SELECT id, first_name, last_name, email, role, is_verified, is_active "
+                "FROM users ORDER BY id"
+            )
+            cursor.execute(sql)
+            return cursor.fetchall()
+        finally:
+            cursor.close()
+            conn.close()
+
+    def get_by_id(self, user_id):
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        try:
+            sql = (
+                "SELECT id, first_name, last_name, email, role, is_verified, is_active "
+                "FROM users WHERE id = %s"
+            )
+            cursor.execute(sql, (user_id,))
+            return cursor.fetchone()
+        finally:
+            cursor.close()
+            conn.close()
+
+    def update_role(self, user_id, role):
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            sql = "UPDATE users SET role = %s WHERE id = %s"
+            cursor.execute(sql, (role, user_id))
+            conn.commit()
+        except Error:
+            conn.rollback()
+            raise
+        finally:
+            cursor.close()
+            conn.close()
+
