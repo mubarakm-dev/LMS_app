@@ -4,9 +4,10 @@ from src.domain.enums import Role
 
 class App:
 
-    def __init__(self, auth_service, user_service):
+    def __init__(self, auth_service, user_service, course_service):
         self.auth = auth_service
         self.users = user_service
+        self.courses = course_service
         self.user = None
 
     def main_menu(self):
@@ -106,6 +107,127 @@ class App:
 
     def instructor_dashboard(self):
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the instructor portal")
+
+        while True:
+            print("""
+            Instructor menu
+            1. Create a course
+            2. View my courses
+            3. Update a course
+            4. Delete a course
+
+            8. Logout
+            """)
+            choice = input("Enter your choice: ")
+
+            if choice == "1":
+                self.create_course()
+            elif choice == "2":
+                self.view_my_courses()
+            elif choice == "3":
+                self.update_course()
+            elif choice == "4":
+                self.delete_course()
+            elif choice == "8":
+                print("Logged out.")
+                break
+            else:
+                print("Invalid choice.")
+
+    def create_course(self):
+        title = input("Course title: ")
+        description = input("Description (optional): ")
+        duration = input("Duration, e.g. 6 weeks (optional): ")
+
+        try:
+            course_id = self.courses.create_course(self.user, title, description, duration)
+            print(f"Course created with ID {course_id}.")
+
+        except LMSError as e:
+            print(f"Error: {e}")
+
+    def view_my_courses(self):
+        try:
+            courses = self.courses.list_my_courses(self.user)
+        except LMSError as e:
+            print(f"Error: {e}")
+            return
+
+        if not courses:
+            print("You have no courses yet.")
+            return
+
+        print(f"\n{'ID':<5}{'Title':<30}{'Duration':<15}{'Description'}")
+        for c in courses:
+            print(
+                f"{c['id']:<5}{c['title']:<30}{c['duration'] or '-':<15}{c['description'] or '-'}"
+            )
+
+    def update_course(self):
+        raw_id = input("Enter the ID of the course to update: ")
+        if not raw_id.isdigit():
+            print("Error: please enter a number.")
+            return
+        course_id = int(raw_id)
+
+        try:
+            courses = self.courses.list_my_courses(self.user)
+        except LMSError as e:
+            print(f"Error: {e}")
+            return
+
+        current = next((c for c in courses if c["id"] == course_id), None)
+        if current is None:
+            print("Error: you have no course with that ID.")
+            return
+
+        print("Press Enter to keep the current value.")
+        title = input(f"Title [{current['title']}]: ") or current["title"]
+        description = input(f"Description [{current['description'] or '-'}]: ") or (current["description"] or "")
+        duration = input(f"Duration [{current['duration'] or '-'}]: ") or (current["duration"] or "")
+
+        try:
+            self.courses.update_course(self.user, course_id, title, description, duration)
+            print("Course updated.")
+        except LMSError as e:
+            print(f"Error: {e}")
+
+
+        
+
+    def delete_course(self):
+        raw_id = input("Enter the ID of the course to delete: ")
+        if not raw_id.isdigit():
+            print("Error: please enter a number.")
+            return
+        course_id = int(raw_id)
+
+        try:
+            courses = self.courses.list_my_courses(self.user)
+        except LMSError as e:
+            print(f"Error: {e}")
+            return
+        current = next((c for c in courses if c["id"] == course_id), None)
+        if current is None:
+            print("Error: you have no course with that ID.")
+            return
+
+        if input(f"Delete '{current['title']}' and everything in it? (y/n): ").lower() != "y":
+            print("Cancelled.")
+            return
+        try:
+            self.courses.delete_course(self.user, course_id)
+            print("Course deleted.")
+        except LMSError as e:
+            print(f"Error: {e}")
+
+
+
+    
+
+
+
+
 
     def admin_dashboard(self):
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the admin portal")
