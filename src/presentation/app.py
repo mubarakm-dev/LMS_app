@@ -184,6 +184,7 @@ class App:
             2. View my courses
             3. Update a course
             4. Delete a course
+            5. View students in a course
 
             8. Logout
             """)
@@ -197,11 +198,36 @@ class App:
                 self.update_course()
             elif choice == "4":
                 self.delete_course()
+            elif choice == "5":
+                self.view_course_students()
             elif choice == "8":
                 print("Logged out.")
                 break
             else:
                 print("Invalid choice.")
+
+    def view_course_students(self):
+        raw_id = input("Enter the ID of the course: ")
+        if not raw_id.isdigit():
+            print("Error: please enter a number.")
+            return
+        course_id = int(raw_id)
+
+        try:
+            students = self.courses.list_course_students(self.user, course_id)
+        except LMSError as e:
+            print(f"Error: {e}")
+            return
+
+        if not students:
+            print("No students are enrolled in this course yet.")
+            return
+
+        print(f"\n{'ID':<5}{'Name':<25}{'Email':<30}{'Status':<12}{'Enrolled'}")
+        for s in students:
+            name = f"{s['first_name']} {s['last_name']}"
+            enrolled = s["enrolled_at"].strftime("%Y-%m-%d")
+            print(f"{s['id']:<5}{name:<25}{s['email']:<30}{s['status']:<12}{enrolled}")
 
     def create_course(self):
         title = input("Course title: ")

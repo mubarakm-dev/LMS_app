@@ -18,7 +18,7 @@ def build():
 
     auth_service = AuthService(user_repo, verification_repo)
     user_service = UserService(user_repo)
-    course_service = CourseService(course_repo)
+    course_service = CourseService(course_repo, enrollment_repo)
     enrollment_service = EnrollmentService(enrollment_repo, course_repo)
 
     return App(auth_service, user_service, course_service, enrollment_service)
