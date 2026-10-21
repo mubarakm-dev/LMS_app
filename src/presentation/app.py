@@ -4,10 +4,11 @@ from src.domain.enums import Role
 
 class App:
 
-    def __init__(self, auth_service, user_service, course_service):
+    def __init__(self, auth_service, user_service, course_service, enrollment_service):
         self.auth = auth_service
         self.users = user_service
         self.courses = course_service
+        self.enrollments = enrollment_service
         self.user = None
 
     def main_menu(self):
@@ -104,6 +105,74 @@ class App:
 
     def student_dashboard(self):
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the student portal")
+
+        while True:
+            print("""
+            Student menu
+            1. Browse courses
+            2. Enroll in a course
+            3. My courses
+
+            8. Logout
+            """)
+            choice = input("Enter your choice: ")
+
+            if choice == "1":
+                self.browse_courses()
+            elif choice == "2":
+                self.enroll_in_course()
+            elif choice == "3":
+                self.view_enrolled_courses()
+            elif choice == "8":
+                print("Logged out.")
+                break
+            else:
+                print("Invalid choice.")
+
+    def browse_courses(self):
+        try:
+            courses = self.enrollments.browse_courses(self.user)
+        except LMSError as e:
+            print(f"Error: {e}")
+            return
+
+        if not courses:
+            print("No courses are available yet.")
+            return
+
+        print(f"\n{'ID':<5}{'Title':<30}{'Instructor':<25}{'Duration':<15}")
+        for c in courses:
+            instructor = f"{c['instructor_first_name']} {c['instructor_last_name']}"
+            print(f"{c['id']:<5}{c['title']:<30}{instructor:<25}{c['duration'] or '-':<15}")
+
+    def enroll_in_course(self):
+        raw_id = input("Enter the ID of the course to enroll in: ")
+        if not raw_id.isdigit():
+            print("Error: please enter a number.")
+            return
+        course_id = int(raw_id)
+
+        try:
+            self.enrollments.enroll(self.user, course_id)
+            print("Enrolled successfully.")
+        except LMSError as e:
+            print(f"Error: {e}")
+
+    def view_enrolled_courses(self):
+        try:
+            courses = self.enrollments.my_courses(self.user)
+        except LMSError as e:
+            print(f"Error: {e}")
+            return
+
+        if not courses:
+            print("You are not enrolled in any courses yet.")
+            return
+
+        print(f"\n{'ID':<5}{'Title':<30}{'Instructor':<25}{'Status':<12}")
+        for c in courses:
+            instructor = f"{c['instructor_first_name']} {c['instructor_last_name']}"
+            print(f"{c['id']:<5}{c['title']:<30}{instructor:<25}{c['status']:<12}")
 
     def instructor_dashboard(self):
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the instructor portal")
