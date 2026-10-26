@@ -72,7 +72,7 @@ CREATE TABLE submissions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     assignment_id INT NOT NULL,
     user_id INT NOT NULL,
-    submission_file VARCHAR(255),
+    submission_link VARCHAR(255) NOT NULL,
     score DECIMAL(5,2) NULL,                                              
     feedback TEXT,                                                         
     released BOOLEAN NOT NULL DEFAULT FALSE,                               
