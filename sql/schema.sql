@@ -88,7 +88,8 @@ CREATE TABLE quizzes (
     title VARCHAR(100) NOT NULL,
     total_marks INT NOT NULL DEFAULT 0,
     duration INT NOT NULL,                                                 
-    is_published BOOLEAN NOT NULL DEFAULT FALSE,                            
+    is_published BOOLEAN NOT NULL DEFAULT FALSE,
+    results_released BOOLEAN NOT NULL DEFAULT FALSE,                            
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_quizzes_course FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );
@@ -114,7 +115,6 @@ CREATE TABLE quiz_results (
     user_id INT NOT NULL,
     score DECIMAL(5,2) NOT NULL,
     language VARCHAR(10) NOT NULL DEFAULT 'en',                            
-    released BOOLEAN NOT NULL DEFAULT FALSE,                                
     attempted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_quiz_results_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE,
     CONSTRAINT fk_quiz_results_user FOREIGN KEY (user_id) REFERENCES users(id)
