@@ -18,6 +18,9 @@ class StudentMenu:
             2. Enroll in a course
             3. My courses
             4. View lessons for a course
+            5. View assignments for a course
+            6. Submit an assignment
+            7. My submissions and marks
 
             8. Logout
             """)
@@ -31,6 +34,12 @@ class StudentMenu:
                 self.view_enrolled_courses()
             elif choice == "4":
                 self.read_course_lessons()
+            elif choice == "5":
+                self.view_assignments()
+            elif choice == "6":
+                self.submit_assignment()
+            elif choice == "7":
+                self.view_my_submissions()
             elif choice == "8":
                 print("Logged out.")
                 break
@@ -105,3 +114,66 @@ class StudentMenu:
                 print(f"Video: {lesson['video_url']}")
             if lesson["content"]:
                 print(lesson["content"])
+
+    def view_assignments(self):
+        raw_id = input("Enter the ID of the course: ")
+        if not raw_id.isdigit():
+            print("Error: please enter a number.")
+            return
+        course_id = int(raw_id)
+
+        try:
+            assignments = self.assignments.list_assignments_for_student(self.user, course_id)
+        except LMSError as e:
+            print(f"Error: {e}")
+            return
+
+        if not assignments:
+            print("This course has no assignments yet.")
+            return
+
+        for a in assignments:
+            due = a["due_date"].strftime("%Y-%m-%d") if a["due_date"] else "no deadline"
+            print(f"\n[{a['id']}] {a['title']}  (due: {due}, marks: {a['max_marks']})")
+            if a["description"]:
+                print(a["description"])
+
+    def submit_assignment(self):
+        raw_id = input("Enter the ID of the assignment: ")
+        if not raw_id.isdigit():
+            print("Error: please enter a number.")
+            return
+        assignment_id = int(raw_id)
+
+        link = input("Paste the link to your work (https://...): ")
+
+        try:
+            self.assignments.submit(self.user, assignment_id, link)
+            print("Submitted successfully.")
+        except LMSError as e:
+            print(f"Error: {e}")
+
+    def view_my_submissions(self):
+        try:
+            submissions = self.assignments.my_submissions(self.user)
+        except LMSError as e:
+            print(f"Error: {e}")
+            return
+
+        if not submissions:
+            print("You have not submitted anything yet.")
+            return
+
+        for s in submissions:
+            when = s["submitted_at"].strftime("%Y-%m-%d %H:%M")
+            if s["released"]:
+                result = f"{s['score']}/{s['max_marks']}"
+            else:
+                result = "pending"
+
+            print(f"\n{s['course_title']} / {s['assignment_title']}")
+            print(f"  Submitted: {when}")
+            print(f"  Link:      {s['submission_link']}")
+            print(f"  Result:    {result}")
+            if s["released"] and s["feedback"]:
+                print(f"  Feedback:  {s['feedback']}")
