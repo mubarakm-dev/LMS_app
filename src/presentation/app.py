@@ -1,8 +1,8 @@
 from src.domain.enums import Role
 from src.presentation.admin_menu import AdminMenu
 from src.presentation.auth_menu import AuthMenu
-from src.presentation.student_menu import StudentMenu
-from src.presentation.teacher_menu import TeacherMenu
+from src.presentation.student.student_menu import StudentMenu
+from src.presentation.teacher.teacher_menu import TeacherMenu
 
 
 class App:
@@ -14,6 +14,7 @@ class App:
         enrollment_service,
         lesson_service,
         assignment_service,
+        quiz_service,
     ):
         self.auth_menu = AuthMenu(auth_service)
         self.users = user_service
@@ -21,6 +22,7 @@ class App:
         self.enrollments = enrollment_service
         self.lessons = lesson_service
         self.assignments = assignment_service
+        self.quizzes = quiz_service
 
     def main_menu(self):
         while True:
@@ -46,8 +48,12 @@ class App:
 
     def open_role_menu(self, user):
         if user.role == Role.STUDENT:
-            StudentMenu(user, self.enrollments, self.lessons, self.assignments).run()
+            StudentMenu(
+                user, self.enrollments, self.lessons, self.assignments, self.quizzes
+            ).run()
         elif user.role == Role.INSTRUCTOR:
-            TeacherMenu(user, self.courses, self.lessons, self.assignments).run()
+            TeacherMenu(
+                user, self.courses, self.lessons, self.assignments, self.quizzes
+            ).run()
         elif user.role == Role.ADMIN:
             AdminMenu(user, self.users).run()
