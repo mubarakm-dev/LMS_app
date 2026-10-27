@@ -15,6 +15,7 @@ class App:
         lesson_service,
         assignment_service,
         quiz_service,
+        report_service,
     ):
         self.auth_menu = AuthMenu(auth_service)
         self.users = user_service
@@ -23,6 +24,7 @@ class App:
         self.lessons = lesson_service
         self.assignments = assignment_service
         self.quizzes = quiz_service
+        self.reports = report_service
 
     def main_menu(self):
         while True:
@@ -56,4 +58,4 @@ class App:
                 user, self.courses, self.lessons, self.assignments, self.quizzes
             ).run()
         elif user.role == Role.ADMIN:
-            AdminMenu(user, self.users).run()
+            AdminMenu(user, self.users, self.reports).run()

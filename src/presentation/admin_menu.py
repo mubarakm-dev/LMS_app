@@ -3,9 +3,10 @@ from src.domain.errors import LMSError
 
 
 class AdminMenu:
-    def __init__(self, user, user_service):
+    def __init__(self, user, user_service, report_service):
         self.user = user
         self.users = user_service
+        self.reports = report_service
 
     def run(self):
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the admin portal")
@@ -15,7 +16,9 @@ class AdminMenu:
             Admin menu
             1. View all users
             2. Change a user's role
-            3. Logout
+            3. View statistics
+
+            4. Logout
             """)
             choice = input("Enter your choice: ")
 
@@ -24,6 +27,8 @@ class AdminMenu:
             elif choice == "2":
                 self.change_user_role()
             elif choice == "3":
+                self.view_statistics()
+            elif choice == "4":
                 print("Logged out.")
                 break
             else:
@@ -71,3 +76,31 @@ class AdminMenu:
             print("Role updated.")
         except LMSError as e:
             print(f"Error: {e}")
+
+    def view_statistics(self):
+        try:
+            stats = self.reports.get_overview(self.user)
+            top = self.reports.top_courses(self.user, 5)
+        except LMSError as e:
+            print(f"Error: {e}")
+            return
+
+        print("\nPlatform overview")
+        print(f"  Users:        {stats['total_users']}  "
+              f"(students {stats['students']}, instructors {stats['instructors']}, "
+              f"admins {stats['admins']})")
+        print(f"  Courses:      {stats['courses']}")
+        print(f"  Enrollments:  {stats['enrollments']}")
+        print(f"  Lessons:      {stats['lessons']}")
+        print(f"  Assignments:  {stats['assignments']}  (submissions {stats['submissions']})")
+        print(f"  Quizzes:      {stats['quizzes']}  (questions {stats['questions']}, "
+              f"attempts {stats['quiz_attempts']})")
+
+        if not top:
+            print("\nNo courses yet.")
+            return
+
+        print(f"\n{'Top courses by enrollment':<35}{'Instructor':<25}{'Enrolled'}")
+        for c in top:
+            instructor = f"{c['first_name']} {c['last_name']}"
+            print(f"{c['title']:<35}{instructor:<25}{c['enrollments']}")
