@@ -10,6 +10,7 @@ from src.data.repositories.question_repo import QuestionRepository
 from src.data.repositories.result_repo import ResultRepository
 from src.data.repositories.stats_repo import StatsRepository
 from src.data.repositories.report_repo import ReportRepository
+from src.data.repositories.translation_repo import TranslationRepository
 
 from src.domain.errors import ServiceUnavailable
 from src.presentation.app import App
@@ -22,6 +23,7 @@ from src.services.assignment_service import AssignmentService
 from src.services.quiz_service import QuizService
 from src.services.admin_report_service import AdminReportService
 from src.services.teacher_report_service import TeacherReportService
+from src.services.translation_service import TranslationService
 
 
 
@@ -40,6 +42,7 @@ def build():
     result_repo = ResultRepository()
     stats_repo = StatsRepository()
     report_repo = ReportRepository()
+    translation_repo = TranslationRepository()
 
     auth_service = AuthService(user_repo, verification_repo)
     user_service = UserService(user_repo)
@@ -60,6 +63,14 @@ def build():
         enrollment_repo,
     )
 
+    translation_service = TranslationService(
+        translation_repo,
+        question_repo,
+        quiz_repo,
+        course_repo,
+        enrollment_repo,
+    )
+
     return App(
         auth_service,
         user_service,
@@ -70,6 +81,7 @@ def build():
         quiz_service,
         admin_report_service,
         teacher_report_service,
+        translation_service,
     )
 
 

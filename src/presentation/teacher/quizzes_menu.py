@@ -2,9 +2,10 @@ from src.domain.errors import LMSError
 
 
 class QuizzesMenu:
-    def __init__(self, user, quiz_service):
+    def __init__(self, user, quiz_service, translations_menu):
         self.user = user
         self.quizzes = quiz_service
+        self.translations_menu = translations_menu
 
     def run(self):
         while True:
@@ -18,7 +19,8 @@ class QuizzesMenu:
             6. Publish a quiz
             7. Release results
             8. View results report
-            9. Back
+            9. Translations
+            10. Back
             """)
             choice = input("Enter your choice: ")
 
@@ -39,6 +41,8 @@ class QuizzesMenu:
             elif choice == "8":
                 self.view_report()
             elif choice == "9":
+                self.translations_menu.run()
+            elif choice == "10":
                 break
             else:
                 print("Invalid choice.")

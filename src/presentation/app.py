@@ -17,6 +17,7 @@ class App:
         quiz_service,
         admin_report_service,
         teacher_report_service,
+        translation_service,
     ):
         self.auth_menu = AuthMenu(auth_service)
         self.users = user_service
@@ -27,6 +28,7 @@ class App:
         self.quizzes = quiz_service
         self.admin_reports = admin_report_service
         self.teacher_reports = teacher_report_service
+        self.translations = translation_service
 
     def main_menu(self):
         while True:
@@ -53,12 +55,13 @@ class App:
     def open_role_menu(self, user):
         if user.role == Role.STUDENT:
             StudentMenu(
-                user, self.enrollments, self.lessons, self.assignments, self.quizzes
+                user, self.enrollments, self.lessons, self.assignments, self.quizzes,
+                self.translations
             ).run()
         elif user.role == Role.INSTRUCTOR:
             TeacherMenu(
                 user, self.courses, self.lessons, self.assignments, self.quizzes,
-                self.teacher_reports
+                self.teacher_reports, self.translations
             ).run()
         elif user.role == Role.ADMIN:
             AdminMenu(user, self.users, self.admin_reports).run()

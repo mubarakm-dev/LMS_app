@@ -10,9 +10,10 @@ def _fmt(score):
 
 
 class QuizzesMenu:
-    def __init__(self, user, quiz_service):
+    def __init__(self, user, quiz_service, translation_service):
         self.user = user
         self.quizzes = quiz_service
+        self.translations = translation_service
 
     def run(self):
         while True:
@@ -65,6 +66,10 @@ class QuizzesMenu:
             return
         quiz_id = int(raw_id)
 
+        language = self._choose_language(quiz_id)
+        if language is None:
+            return
+
         print("The timer starts as soon as you begin. Press Enter on a question to skip it.")
         if input("Start now? (y/n): ").lower() != "y":
             print("Cancelled.")
@@ -77,8 +82,15 @@ class QuizzesMenu:
             return
 
         quiz = data["quiz"]
-        questions = data["questions"]
         limit_seconds = quiz["duration"] * 60
+
+        try:
+            questions = self.translations.apply_language(
+                self.user, quiz_id, language, data["questions"]
+            )
+        except LMSError as e:
+            print(f"Error: {e}")
+            return
 
         print(f"\n{quiz['title']}: {len(questions)} question(s), "
               f"{quiz['total_marks']} mark(s), {quiz['duration']} minute(s).")
@@ -112,13 +124,35 @@ class QuizzesMenu:
             return
 
         try:
-            attempt_number = self.quizzes.submit_quiz(self.user, quiz_id, answers)
+            attempt_number = self.quizzes.submit_quiz(self.user, quiz_id, answers, language)
         except LMSError as e:
             print(f"Error: {e}")
             return
 
         print(f"Your answers were submitted (attempt {attempt_number}).")
         print("Your result will appear once your teacher releases it.")
+
+    def _choose_language(self, quiz_id):
+        try:
+            languages = self.translations.available_languages(self.user, quiz_id)
+        except LMSError as e:
+            print(f"Error: {e}")
+            return None
+
+        if len(languages) == 1:
+            return languages[0][0]
+
+        print("\nThis quiz is available in:")
+        for number, (code, name) in enumerate(languages, start=1):
+            print(f"  {number}. {name}")
+
+        while True:
+            raw = input("Choose a language (press Enter for English): ").strip()
+            if raw == "":
+                return "en"
+            if raw.isdigit() and 1 <= int(raw) <= len(languages):
+                return languages[int(raw) - 1][0]
+            print("Please choose one of the numbers shown.")
 
     def _ask_answer(self):
         while True:

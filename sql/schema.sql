@@ -119,3 +119,21 @@ CREATE TABLE quiz_results (
     CONSTRAINT fk_quiz_results_quiz FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE,
     CONSTRAINT fk_quiz_results_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- Saved machine translations of quiz questions.
+-- source_updated_at records the question's updated_at when it was translated:
+-- if the question is edited later the two no longer match, so the translation is stale.
+CREATE TABLE question_translations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question_id INT NOT NULL,
+    language VARCHAR(10) NOT NULL,
+    question_text TEXT NOT NULL,
+    option_a VARCHAR(500) NOT NULL,
+    option_b VARCHAR(500) NOT NULL,
+    option_c VARCHAR(500) NOT NULL,
+    option_d VARCHAR(500) NOT NULL,
+    source_updated_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (question_id, language),
+    CONSTRAINT fk_translations_question FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
+);
