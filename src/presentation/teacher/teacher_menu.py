@@ -2,15 +2,18 @@ from src.presentation.teacher.assignments_menu import AssignmentsMenu
 from src.presentation.teacher.courses_menu import CoursesMenu
 from src.presentation.teacher.lessons_menu import LessonsMenu
 from src.presentation.teacher.quizzes_menu import QuizzesMenu
+from src.presentation.teacher.reports_menu import ReportsMenu
 
 
 class TeacherMenu:
-    def __init__(self, user, course_service, lesson_service, assignment_service, quiz_service):
+    def __init__(self, user, course_service, lesson_service, assignment_service,
+                 quiz_service, report_service):
         self.user = user
         self.courses_menu = CoursesMenu(user, course_service)
         self.lessons_menu = LessonsMenu(user, lesson_service)
         self.assignments_menu = AssignmentsMenu(user, assignment_service)
         self.quizzes_menu = QuizzesMenu(user, quiz_service)
+        self.reports_menu = ReportsMenu(user, report_service)
 
     def run(self):
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the instructor portal")
@@ -26,8 +29,9 @@ class TeacherMenu:
             6. Manage lessons
             7. Manage assignments
             8. Manage quizzes
+            9. Reports and exports
 
-            9. Logout
+            10. Logout
             """)
             choice = input("Enter your choice: ")
 
@@ -48,6 +52,8 @@ class TeacherMenu:
             elif choice == "8":
                 self.quizzes_menu.run()
             elif choice == "9":
+                self.reports_menu.run()
+            elif choice == "10":
                 print("Logged out.")
                 break
             else:

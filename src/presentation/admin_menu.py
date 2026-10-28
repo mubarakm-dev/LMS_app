@@ -17,8 +17,9 @@ class AdminMenu:
             1. View all users
             2. Change a user's role
             3. View statistics
+            4. Export summary report (CSV)
 
-            4. Logout
+            5. Logout
             """)
             choice = input("Enter your choice: ")
 
@@ -29,6 +30,8 @@ class AdminMenu:
             elif choice == "3":
                 self.view_statistics()
             elif choice == "4":
+                self.export_summary()
+            elif choice == "5":
                 print("Logged out.")
                 break
             else:
@@ -74,6 +77,13 @@ class AdminMenu:
         try:
             self.users.change_role(self.user, user_id, new_role.value)
             print("Role updated.")
+        except LMSError as e:
+            print(f"Error: {e}")
+
+    def export_summary(self):
+        try:
+            path = self.reports.export_overview(self.user)
+            print(f"Report saved to: {path}")
         except LMSError as e:
             print(f"Error: {e}")
 

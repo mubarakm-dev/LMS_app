@@ -9,6 +9,7 @@ from src.data.repositories.quiz_repo import QuizRepository
 from src.data.repositories.question_repo import QuestionRepository
 from src.data.repositories.result_repo import ResultRepository
 from src.data.repositories.stats_repo import StatsRepository
+from src.data.repositories.report_repo import ReportRepository
 
 from src.domain.errors import ServiceUnavailable
 from src.presentation.app import App
@@ -19,7 +20,8 @@ from src.services.user_service import UserService
 from src.services.lesson_service import LessonService
 from src.services.assignment_service import AssignmentService
 from src.services.quiz_service import QuizService
-from src.services.report_service import ReportService
+from src.services.admin_report_service import AdminReportService
+from src.services.teacher_report_service import TeacherReportService
 
 
 
@@ -37,6 +39,7 @@ def build():
     question_repo = QuestionRepository()
     result_repo = ResultRepository()
     stats_repo = StatsRepository()
+    report_repo = ReportRepository()
 
     auth_service = AuthService(user_repo, verification_repo)
     user_service = UserService(user_repo)
@@ -46,7 +49,16 @@ def build():
     assignment_service = AssignmentService(assignment_repo, submission_repo, course_repo, enrollment_repo)
     quiz_service = QuizService(quiz_repo, question_repo, result_repo, course_repo, enrollment_repo)
 
-    report_service = ReportService(stats_repo)
+    admin_report_service = AdminReportService(stats_repo)
+    teacher_report_service = TeacherReportService(
+        report_repo,
+        result_repo,
+        submission_repo,
+        quiz_repo,
+        assignment_repo,
+        course_repo,
+        enrollment_repo,
+    )
 
     return App(
         auth_service,
@@ -56,7 +68,8 @@ def build():
         lesson_service,
         assignment_service,
         quiz_service,
-        report_service,
+        admin_report_service,
+        teacher_report_service,
     )
 
 
