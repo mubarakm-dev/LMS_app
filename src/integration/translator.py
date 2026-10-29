@@ -21,6 +21,10 @@ def language_name(code):
     return LANGUAGE_NAMES.get(code, code)
 
 
+def available_sources():
+    return {src: language_name(src) for src in sorted({src for (src, _) in TESTED_PAIRS})}
+
+
 def available_targets(source="en"):
     return {dst: language_name(dst) for (src, dst) in sorted(TESTED_PAIRS) if src == source}
 

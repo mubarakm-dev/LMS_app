@@ -1,3 +1,5 @@
+import sys
+
 from src.data.repositories.course_repo import CourseRepository
 from src.data.repositories.enrollment_repo import EnrollmentRepository
 from src.data.repositories.user_repo import UserRepository
@@ -90,6 +92,8 @@ def build():
 
 
 if __name__ == "__main__":
+    # Arabic and accented text would crash a legacy Windows console
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     try:
         build().main_menu()
     except ServiceUnavailable as e:

@@ -4,6 +4,8 @@ from src.presentation.teacher.lessons_menu import LessonsMenu
 from src.presentation.teacher.quizzes_menu import QuizzesMenu
 from src.presentation.teacher.reports_menu import ReportsMenu
 from src.presentation.teacher.translations_menu import TranslationsMenu
+from src.presentation.teacher.voice_translator_menu import VoiceTranslatorMenu
+from src.presentation.voice_commands import VoiceCommands
 
 
 class TeacherMenu:
@@ -16,6 +18,20 @@ class TeacherMenu:
         translations_menu = TranslationsMenu(user, translation_service, quiz_service, voice_service)
         self.quizzes_menu = QuizzesMenu(user, quiz_service, translations_menu)
         self.reports_menu = ReportsMenu(user, report_service)
+        self.voice_translator_menu = VoiceTranslatorMenu(user, voice_service)
+        self.voice_commands = VoiceCommands(user, voice_service, {
+            "create_course": self.courses_menu.create_course,
+            "my_courses": self.courses_menu.view_my_courses,
+            "update_course": self.courses_menu.update_course,
+            "delete_course": self.courses_menu.delete_course,
+            "students": self.courses_menu.view_course_students,
+            "lessons": self.lessons_menu.run,
+            "assignments": self.assignments_menu.run,
+            "quizzes": self.quizzes_menu.run,
+            "reports": self.reports_menu.run,
+            "translator": self.voice_translator_menu.run,
+            "logout": None,
+        })
 
     def run(self):
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the instructor portal")
@@ -33,7 +49,9 @@ class TeacherMenu:
             8. Manage quizzes
             9. Reports and exports
 
-            10. Logout
+            10. Speak a command
+            11. Voice translator
+            12. Logout
             """)
             choice = input("Enter your choice: ")
 
@@ -56,6 +74,12 @@ class TeacherMenu:
             elif choice == "9":
                 self.reports_menu.run()
             elif choice == "10":
+                if self.voice_commands.listen_and_run():
+                    print("Logged out.")
+                    break
+            elif choice == "11":
+                self.voice_translator_menu.run()
+            elif choice == "12":
                 print("Logged out.")
                 break
             else:
