@@ -24,6 +24,7 @@ from src.services.quiz_service import QuizService
 from src.services.admin_report_service import AdminReportService
 from src.services.teacher_report_service import TeacherReportService
 from src.services.translation_service import TranslationService
+from src.services.voice_service import VoiceService
 
 
 
@@ -71,6 +72,8 @@ def build():
         enrollment_repo,
     )
 
+    voice_service = VoiceService()
+
     return App(
         auth_service,
         user_service,
@@ -82,6 +85,7 @@ def build():
         admin_report_service,
         teacher_report_service,
         translation_service,
+        voice_service,
     )
 
 

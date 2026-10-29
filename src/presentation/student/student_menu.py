@@ -6,12 +6,12 @@ from src.presentation.student.quizzes_menu import QuizzesMenu
 
 class StudentMenu:
     def __init__(self, user, enrollment_service, lesson_service, assignment_service,
-                 quiz_service, translation_service):
+                 quiz_service, translation_service, voice_service):
         self.user = user
         self.courses_menu = CoursesMenu(user, enrollment_service)
         self.lessons_menu = LessonsMenu(user, lesson_service)
         self.assignments_menu = AssignmentsMenu(user, assignment_service)
-        self.quizzes_menu = QuizzesMenu(user, quiz_service, translation_service)
+        self.quizzes_menu = QuizzesMenu(user, quiz_service, translation_service, voice_service)
 
     def run(self):
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the student portal")

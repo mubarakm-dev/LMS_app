@@ -10,10 +10,11 @@ def _fmt(score):
 
 
 class QuizzesMenu:
-    def __init__(self, user, quiz_service, translation_service):
+    def __init__(self, user, quiz_service, translation_service, voice_service):
         self.user = user
         self.quizzes = quiz_service
         self.translations = translation_service
+        self.voice = voice_service
 
     def run(self):
         while True:
@@ -113,7 +114,7 @@ class QuizzesMenu:
             print(f"  C) {q['option_c']}")
             print(f"  D) {q['option_d']}")
 
-            answer = self._ask_answer()
+            answer = self._ask_answer(q, language)
             if answer is not None:
                 answers[q["id"]] = answer
 
@@ -154,14 +155,23 @@ class QuizzesMenu:
                 return languages[int(raw) - 1][0]
             print("Please choose one of the numbers shown.")
 
-    def _ask_answer(self):
+    def _ask_answer(self, question, language):
         while True:
-            raw = input("Your answer (A, B, C or D, Enter to skip): ").strip().upper()
+            raw = input("Your answer (A, B, C or D, R to hear it, Enter to skip): ").strip().upper()
             if raw == "":
                 return None
             if raw in VALID_ANSWERS:
                 return raw
-            print("Please enter A, B, C or D.")
+            if raw == "R":
+                self._read_aloud(question, language)
+                continue
+            print("Please enter A, B, C or D, or R to hear the question.")
+
+    def _read_aloud(self, question, language):
+        try:
+            self.voice.read_question(self.user, question, language)
+        except LMSError as e:
+            print(f"Error: {e}")
 
     def view_results(self):
         try:

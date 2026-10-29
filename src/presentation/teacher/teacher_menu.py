@@ -8,12 +8,12 @@ from src.presentation.teacher.translations_menu import TranslationsMenu
 
 class TeacherMenu:
     def __init__(self, user, course_service, lesson_service, assignment_service,
-                 quiz_service, report_service, translation_service):
+                 quiz_service, report_service, translation_service, voice_service):
         self.user = user
         self.courses_menu = CoursesMenu(user, course_service)
         self.lessons_menu = LessonsMenu(user, lesson_service)
         self.assignments_menu = AssignmentsMenu(user, assignment_service)
-        translations_menu = TranslationsMenu(user, translation_service, quiz_service)
+        translations_menu = TranslationsMenu(user, translation_service, quiz_service, voice_service)
         self.quizzes_menu = QuizzesMenu(user, quiz_service, translations_menu)
         self.reports_menu = ReportsMenu(user, report_service)
 

@@ -2,8 +2,9 @@ from src.domain.errors import LMSError
 
 
 class TranslationsMenu:
-    def __init__(self, user, translation_service, quiz_service):
+    def __init__(self, user, translation_service, quiz_service, voice_service):
         self.user = user
+        self.voice = voice_service
         self.translations = translation_service
         self.quizzes = quiz_service
 
@@ -120,6 +121,7 @@ class TranslationsMenu:
 
         if translated is None:
             print(f"\nNo {language} translation saved yet.")
+            self._offer_read_aloud(original, None, language)
             return
 
         print(f"\nTranslation ({language})")
@@ -132,6 +134,33 @@ class TranslationsMenu:
                   "Translate it again.")
         else:
             print("\nMachine translation: please review it before using it in an assessment.")
+
+        self._offer_read_aloud(original, translated, language)
+
+    def _offer_read_aloud(self, original, translated, language):
+        options = {"1": ("English", original, "en")}
+        if translated is not None and self.voice.has_voice(language):
+            name = self.translations.supported_languages().get(language, language)
+            options["2"] = (name, translated, language)
+
+        listing = "  ".join(f"{key} = {entry[0]}" for key, entry in options.items())
+        while True:
+            choice = input(f"\nRead aloud? {listing} (Enter to skip): ").strip()
+            if choice == "":
+                return
+
+            selected = options.get(choice)
+            if selected is None:
+                print("Please choose one of the options shown.")
+                continue
+
+            name, question, code = selected
+            print(f"Reading in {name}...")
+            try:
+                self.voice.read_question(self.user, question, code)
+            except LMSError as e:
+                print(f"Error: {e}")
+                return
 
     # actions
 
