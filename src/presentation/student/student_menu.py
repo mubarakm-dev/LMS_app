@@ -2,17 +2,19 @@ from src.presentation.student.assignments_menu import AssignmentsMenu
 from src.presentation.student.courses_menu import CoursesMenu
 from src.presentation.student.lessons_menu import LessonsMenu
 from src.presentation.student.quizzes_menu import QuizzesMenu
+from src.presentation.profile_menu import ProfileMenu
 from src.presentation.voice_commands import VoiceCommands
 
 
 class StudentMenu:
     def __init__(self, user, enrollment_service, lesson_service, assignment_service,
-                 quiz_service, translation_service, voice_service):
+                 quiz_service, translation_service, voice_service, user_service):
         self.user = user
         self.courses_menu = CoursesMenu(user, enrollment_service)
         self.lessons_menu = LessonsMenu(user, lesson_service)
         self.assignments_menu = AssignmentsMenu(user, assignment_service)
         self.quizzes_menu = QuizzesMenu(user, quiz_service, translation_service, voice_service)
+        self.profile_menu = ProfileMenu(user, user_service)
         self.voice_commands = VoiceCommands(user, voice_service, {
             "browse_courses": self.courses_menu.browse_courses,
             "enroll": self.courses_menu.enroll_in_course,
@@ -22,6 +24,7 @@ class StudentMenu:
             "submit_assignment": self.assignments_menu.submit_assignment,
             "submissions": self.assignments_menu.view_my_submissions,
             "quizzes": self.quizzes_menu.run,
+            "profile": self.profile_menu.run,
             "logout": None,
         })
 
@@ -41,7 +44,8 @@ class StudentMenu:
             8. Quizzes
 
             9. Speak a command
-            10. Logout
+            10. My profile
+            11. Logout
             """)
             choice = input("Enter your choice: ")
 
@@ -66,6 +70,8 @@ class StudentMenu:
                     print("Logged out.")
                     break
             elif choice == "10":
+                self.profile_menu.run()
+            elif choice == "11":
                 print("Logged out.")
                 break
             else:

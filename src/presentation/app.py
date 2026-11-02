@@ -58,12 +58,12 @@ class App:
         if user.role == Role.STUDENT:
             StudentMenu(
                 user, self.enrollments, self.lessons, self.assignments, self.quizzes,
-                self.translations, self.voice
+                self.translations, self.voice, self.users
             ).run()
         elif user.role == Role.INSTRUCTOR:
             TeacherMenu(
                 user, self.courses, self.lessons, self.assignments, self.quizzes,
-                self.teacher_reports, self.translations, self.voice
+                self.teacher_reports, self.translations, self.voice, self.users
             ).run()
         elif user.role == Role.ADMIN:
             AdminMenu(user, self.users, self.admin_reports).run()

@@ -22,6 +22,7 @@ STUDENT_COMMANDS = {
     "submissions": ("My submissions and marks",
                     ["my submissions", "submissions", "my marks", "my grades", "marks", "grades"], False),
     "quizzes": ("Quizzes", ["quizzes", "quiz", "take a quiz"], False),
+    "profile": ("My profile", ["my profile", "profile"], False),
     "logout": ("Log out", ["log out", "logout", "sign out", "goodbye"], True),
 }
 
@@ -35,6 +36,7 @@ TEACHER_COMMANDS = {
     "assignments": ("Manage assignments", ["assignments", "assignment", "manage assignments"], False),
     "quizzes": ("Manage quizzes", ["quizzes", "quiz", "manage quizzes"], False),
     "reports": ("Reports and exports", ["reports", "report", "export", "exports"], False),
+    "profile": ("My profile", ["my profile", "profile"], False),
     "translator": ("Voice translator", ["voice translator", "translator", "translate"], False),
     "logout": ("Log out", ["log out", "logout", "sign out", "goodbye"], True),
 }

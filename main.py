@@ -92,7 +92,7 @@ def build():
 
 
 if __name__ == "__main__":
-    # Arabic and accented text would crash a legacy Windows console
+    
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     try:
         build().main_menu()
