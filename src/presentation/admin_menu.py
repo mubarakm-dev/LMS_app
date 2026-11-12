@@ -1,5 +1,5 @@
 from src.domain.enums import Role
-from src.domain.errors import LMSError
+from src.domain.errors import AuthError, LMSError
 from src.presentation.profile_menu import ProfileMenu
 
 
@@ -14,6 +14,12 @@ class AdminMenu:
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the admin portal")
 
         while True:
+            try:
+                self.users.check_session(self.user)
+            except AuthError as e:
+                print(f"{e}")
+                break
+
             print("""
             Admin menu
             1. View all users

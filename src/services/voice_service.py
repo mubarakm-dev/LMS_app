@@ -51,9 +51,37 @@ def _sentence(text):
 
 FUZZY_CUTOFF = 0.8
 
+NUMBER_WORDS = {
+    "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
+    "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13,
+}
+# words Whisper writes for numbers, only trusted after "option"
+SOUND_ALIKES = {"won": 1, "to": 2, "too": 2, "for": 4, "ate": 8}
+OPTION_WORDS = ("option", "number", "choice", "choose", "select", "pick")
+
 
 def _normalise(text):
     return " ".join(re.sub(r"[^a-z0-9]+", " ", text.lower()).split())
+
+
+def _number(word):
+    if word.isdigit():
+        return int(word)
+    return NUMBER_WORDS.get(word)
+
+
+def option_number(text):
+    """'option 5', 'option five', 'number for' or just 'five' -> 5, otherwise None."""
+    words = _normalise(text).split()
+
+    for i, word in enumerate(words[:-1]):
+        if word in OPTION_WORDS:
+            nxt = words[i + 1]
+            return _number(nxt) or SOUND_ALIKES.get(nxt)
+
+    if len(words) == 1:
+        return _number(words[0])
+    return None
 
 
 class VoiceService:
@@ -80,7 +108,8 @@ class VoiceService:
     @require_role(Role.STUDENT, Role.INSTRUCTOR)
     def listen(self, acting_user, seconds=5, language=None, on_tick=None):
         phrases = [p for entry in COMMANDS[acting_user.role].values() for p in entry[1]]
-        prompt = "Voice commands: " + ", ".join(phrases) + "."
+        options = [f"option {word}" for word in NUMBER_WORDS]
+        prompt = "Voice commands: " + ", ".join(phrases + options) + "."
         return self.stt.listen(seconds, language, on_tick, prompt)
 
     @require_role(Role.STUDENT, Role.INSTRUCTOR)
@@ -88,7 +117,12 @@ class VoiceService:
         return {name: entry[0] for name, entry in COMMANDS[acting_user.role].items()}
 
     @require_role(Role.STUDENT, Role.INSTRUCTOR)
-    def understand(self, acting_user, text):
+    def understand(self, acting_user, text, numbers=None):
+        if numbers:
+            number = option_number(text)
+            if number is not None:
+                return numbers.get(number)
+
         words = _normalise(text).split()
         spoken = f" {' '.join(words)} "
         table = COMMANDS[acting_user.role]

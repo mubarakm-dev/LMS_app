@@ -3,7 +3,7 @@ import bcrypt
 from src.domain.enums import Role
 from src.domain.errors import AuthError, NotFound, PermissionDenied, ValidationError
 from src.services import validators
-from src.services.permissions import require_role
+from src.services.permissions import check_account, require_role
 
 ANY_ROLE = (Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN)
 
@@ -11,6 +11,11 @@ ANY_ROLE = (Role.STUDENT, Role.INSTRUCTOR, Role.ADMIN)
 class UserService:
     def __init__(self, user_repo):
         self.user_repo = user_repo
+
+    def check_session(self, acting_user):
+        if acting_user is None:
+            raise AuthError("You must be logged in.")
+        check_account(acting_user, self.user_repo.get_by_id(acting_user.id))
 
     @require_role(Role.ADMIN)
     def list_users(self, acting_user):

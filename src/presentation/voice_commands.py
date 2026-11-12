@@ -4,10 +4,11 @@ LISTEN_SECONDS = 5
 
 
 class VoiceCommands:
-    def __init__(self, user, voice_service, actions):
+    def __init__(self, user, voice_service, actions, numbers=None):
         self.user = user
         self.voice = voice_service
         self.actions = actions
+        self.numbers = numbers or {}
 
     def listen_and_run(self):
         """Returns True if the user asked to log out."""
@@ -17,9 +18,10 @@ class VoiceCommands:
             print(f"Error: {e}")
             return False
 
-        print("\nSay one of these:")
-        for label in examples.values():
-            print(f"  - {label}")
+        print("\nSay a command, or say 'option' and its menu number:")
+        for number, command in self.numbers.items():
+            if command in examples:
+                print(f"  option {number}: {examples[command]}")
 
         if input(f"\nPress Enter to record for {LISTEN_SECONDS} seconds (x to cancel): ").strip().lower() == "x":
             return False
@@ -35,7 +37,7 @@ class VoiceCommands:
                 return False
 
             print(f"I heard: \"{text}\"")
-            command = self.voice.understand(self.user, text)
+            command = self.voice.understand(self.user, text, self.numbers)
             if command is None or command not in self.actions:
                 print("Sorry, I did not recognise that command. Use the menu or try again.")
                 return False

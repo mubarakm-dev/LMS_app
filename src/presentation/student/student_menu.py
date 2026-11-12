@@ -1,3 +1,4 @@
+from src.domain.errors import AuthError
 from src.presentation.student.assignments_menu import AssignmentsMenu
 from src.presentation.student.courses_menu import CoursesMenu
 from src.presentation.student.lessons_menu import LessonsMenu
@@ -10,6 +11,7 @@ class StudentMenu:
     def __init__(self, user, enrollment_service, lesson_service, assignment_service,
                  quiz_service, translation_service, voice_service, user_service):
         self.user = user
+        self.users = user_service
         self.courses_menu = CoursesMenu(user, enrollment_service)
         self.lessons_menu = LessonsMenu(user, lesson_service)
         self.assignments_menu = AssignmentsMenu(user, assignment_service)
@@ -26,12 +28,22 @@ class StudentMenu:
             "quizzes": self.quizzes_menu.run,
             "profile": self.profile_menu.run,
             "logout": None,
+        }, numbers={
+            1: "browse_courses", 2: "enroll", 3: "my_courses", 4: "lessons",
+            5: "assignments", 6: "submit_assignment", 7: "submissions",
+            8: "quizzes", 10: "profile", 11: "logout",
         })
 
     def run(self):
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the student portal")
 
         while True:
+            try:
+                self.users.check_session(self.user)
+            except AuthError as e:
+                print(f"{e}")
+                break
+
             print("""
             Student menu
             1. Browse courses

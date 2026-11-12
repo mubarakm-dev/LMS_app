@@ -16,6 +16,7 @@ from src.data.repositories.translation_repo import TranslationRepository
 
 from src.domain.errors import ServiceUnavailable
 from src.presentation.app import App
+from src.services import permissions
 from src.services.auth_service import AuthService
 from src.services.course_service import CourseService
 from src.services.enrollment_service import EnrollmentService
@@ -34,6 +35,7 @@ from src.services.voice_service import VoiceService
 
 def build():
     user_repo = UserRepository()
+    permissions.set_account_lookup(user_repo.get_by_id)
     verification_repo = VerificationRepo()
     course_repo = CourseRepository()
     enrollment_repo = EnrollmentRepository()

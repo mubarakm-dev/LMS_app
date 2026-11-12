@@ -1,3 +1,4 @@
+from src.domain.errors import AuthError
 from src.presentation.teacher.assignments_menu import AssignmentsMenu
 from src.presentation.teacher.courses_menu import CoursesMenu
 from src.presentation.teacher.lessons_menu import LessonsMenu
@@ -13,6 +14,7 @@ class TeacherMenu:
     def __init__(self, user, course_service, lesson_service, assignment_service,
                  quiz_service, report_service, translation_service, voice_service, user_service):
         self.user = user
+        self.users = user_service
         self.courses_menu = CoursesMenu(user, course_service)
         self.lessons_menu = LessonsMenu(user, lesson_service)
         self.assignments_menu = AssignmentsMenu(user, assignment_service)
@@ -34,12 +36,22 @@ class TeacherMenu:
             "profile": self.profile_menu.run,
             "translator": self.voice_translator_menu.run,
             "logout": None,
+        }, numbers={
+            1: "create_course", 2: "my_courses", 3: "update_course", 4: "delete_course",
+            5: "students", 6: "lessons", 7: "assignments", 8: "quizzes", 9: "reports",
+            11: "translator", 12: "profile", 13: "logout",
         })
 
     def run(self):
         print(f"Welcome {self.user.first_name} {self.user.last_name} to the instructor portal")
 
         while True:
+            try:
+                self.users.check_session(self.user)
+            except AuthError as e:
+                print(f"{e}")
+                break
+
             print("""
             Instructor menu
             1. Create a course
