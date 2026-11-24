@@ -18,8 +18,8 @@ class AuthService:
         self.verification_repo = verification_repo
 
     def register(self, first_name, last_name, email, password, confirm_password):
-        if not first_name.strip() or not last_name.strip():
-            raise ValidationError("First and last name are required.")
+        if not validators.validate_name(first_name) or not validators.validate_name(last_name):
+            raise ValidationError(validators.NAME_MESSAGE)
 
         email = email.strip().lower()
         if not validators.validate_email(email):

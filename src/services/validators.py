@@ -1,5 +1,6 @@
 import re
 import random
+import unicodedata
 import string
 
 def validate_email(email):
@@ -9,6 +10,24 @@ def validate_email(email):
         return True
     else:
          return False
+
+NAME_MESSAGE = (
+    "First and last names must be 2 to 50 characters and can only contain "
+    "letters, spaces, hyphens and apostrophes."
+)
+
+
+def validate_name(name):
+    name = name.strip()
+    if not 2 <= len(name) <= 50:
+        return False
+
+    for ch in name:
+        if not (ch.isalpha() or unicodedata.category(ch).startswith("M") or ch in " -'’"):
+            return False
+
+    return name[0].isalpha() and name[-1].isalpha()
+
 
 def validate_password(password):
     pattern = r"(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W]).{8,}"

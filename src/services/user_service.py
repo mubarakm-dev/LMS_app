@@ -75,11 +75,10 @@ class UserService:
 
     @require_role(*ANY_ROLE)
     def update_profile(self, acting_user, first_name, last_name):
+        if not validators.validate_name(first_name) or not validators.validate_name(last_name):
+            raise ValidationError(validators.NAME_MESSAGE)
+
         first_name, last_name = first_name.strip(), last_name.strip()
-        if not first_name or not last_name:
-            raise ValidationError("First and last name are required.")
-        if len(first_name) > 50 or len(last_name) > 50:
-            raise ValidationError("Names can be at most 50 characters.")
 
         self.user_repo.update_name(acting_user.id, first_name, last_name)
         acting_user.first_name = first_name
